@@ -33,6 +33,7 @@ export default function Home() {
 const Account = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
+  const [isLoading, setisLoading] = useState(true);
 
   const [isOpenAddTodo, setisOpenAddTodo] = useState(false);
   const [todos, setTodos] = useState([]);
@@ -44,7 +45,6 @@ const Account = () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      console.log(user);
 
       supabase
         .from("todos")
@@ -56,6 +56,7 @@ const Account = () => {
             setTodos(data);
           }
 
+          setisLoading(false);
           console.log(error);
         });
     })();
@@ -132,6 +133,8 @@ const Account = () => {
           isOpen={isOpenAddTodo}
           onClose={() => setisOpenAddTodo(false)}
         />
+        {isLoading && <p>Loading ....</p>}
+        {!isLoading && todos.length < 1 && <p>No todos yet</p>}
         {todos.map((todo) => (
           <Todo todo={todo} key={todo.id} />
         ))}
